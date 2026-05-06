@@ -29,22 +29,68 @@ class CustomerControllerTest {
     }
 
     @Test
+    void testDeleteByIdNotFound() {
+        webTestClient.delete().uri(CustomerController.CUSTOMER_PATH_ID, 999)
+                .exchange()
+                .expectStatus().isNotFound();
+    }
+
+    @Test
+    void testPatchCustomerNotFound() {
+        webTestClient.patch().uri(CustomerController.CUSTOMER_PATH_ID, 999)
+                .body(Mono.just(getTestCustomer()), CustomerDTO.class)
+                .exchange()
+                .expectStatus().isNotFound();
+    }
+
+    @Test
     @Order(4)
-    void testUpdateExistingCustomer() {
+    void testUpdateCustomer() {
         webTestClient.put().uri(CustomerController.CUSTOMER_PATH_ID, 1)
-                .body(Mono.just(getTestCustormer()), CustomerDTO.class)
+                .body(Mono.just(getTestCustomer()), CustomerDTO.class)
                 .exchange()
                 .expectStatus().isNoContent();
     }
 
     @Test
+    void testUpdateCustomerBadRequest() {
+        Customer testCustomer = getTestCustomer();
+        testCustomer.setCustomerName(null);
+
+        webTestClient.put().uri(CustomerController.CUSTOMER_PATH_ID, 1)
+                .body(Mono.just(testCustomer), CustomerDTO.class)
+                .exchange()
+                .expectStatus().isBadRequest();
+    }
+
+    @Test
+    void testUpdateCustomerNotFound() {
+        webTestClient.put().uri(CustomerController.CUSTOMER_PATH_ID, 999)
+                .body(Mono.just(getTestCustomer()), CustomerDTO.class)
+                .exchange()
+                .expectStatus().isNotFound();
+    }
+
+    @Test
     @Order(3)
-    void testCreateNewCustomer() {
+    void testCreateCustomer() {
         webTestClient.post().uri(CustomerController.CUSTOMER_PATH)
-                .body(Mono.just(getTestCustormer()), CustomerDTO.class)
+                .body(Mono.just(getTestCustomer()), CustomerDTO.class)
                 .header("Content-Type", "application/json")
                 .exchange()
                 .expectStatus().isCreated();
+    }
+
+    @Test
+    void testCreateCustomerBadRequest() {
+        Customer testCustomer = getTestCustomer();
+        testCustomer.setCustomerName("");
+
+        webTestClient.post().uri(CustomerController.CUSTOMER_PATH)
+                .body(Mono.just(testCustomer), CustomerDTO.class)
+                .header("Content-Type", "application/json")
+                .exchange()
+                .expectStatus().isBadRequest();
     }
 
     @Test
@@ -58,6 +104,13 @@ class CustomerControllerTest {
     }
 
     @Test
+    void testGetCustomerByIdNotFound() {
+        webTestClient.get().uri(CustomerController.CUSTOMER_PATH_ID, 999)
+                .exchange()
+                .expectStatus().isNotFound();
+    }
+
+    @Test
     @Order(1)
     void testListCustomers() {
         webTestClient.get().uri(CustomerController.CUSTOMER_PATH)
@@ -67,7 +120,7 @@ class CustomerControllerTest {
                 .expectBody().jsonPath("$.size()").isEqualTo(3);
     }
 
-    Customer getTestCustormer() {
+    Customer getTestCustomer() {
         return Customer.builder()
                 .customerName("Test customer")
                 .build();
