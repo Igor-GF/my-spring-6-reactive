@@ -2,7 +2,6 @@ package guru.springframework.myspring6reactive.repositories;
 
 import guru.springframework.myspring6reactive.config.DatabaseConfig;
 import guru.springframework.myspring6reactive.domain.Beer;
-import guru.springframework.myspring6reactive.model.BeerDTO;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.r2dbc.test.autoconfigure.DataR2dbcTest;
@@ -13,7 +12,7 @@ import java.math.BigDecimal;
 
 @DataR2dbcTest
 @Import(DatabaseConfig.class)
-class BeerRepositoryTest {
+public class BeerRepositoryTest {
 
     @Autowired
     BeerRepository beerRepository;
@@ -28,12 +27,10 @@ class BeerRepositoryTest {
     @Test
     void saveNewBeer() {
         beerRepository.save(getTestBeer())
-                .subscribe(beer ->
-                        System.out.println(beer.toString())
-                );
+                .subscribe(System.out::println);
     }
 
-    Beer getTestBeer() {
+    public static Beer getTestBeer() {
         return Beer.builder()
                 .beerName("Space Dust")
                 .beerStyle("IPA")

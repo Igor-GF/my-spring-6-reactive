@@ -19,16 +19,14 @@ public class BootstrapData implements CommandLineRunner {
     private final CustomerRepository customerRepository;
 
     @Override
-    public void run(String... args) throws Exception {
+    public void run(String... args) {
         loadBeerData();
         loadCustomerData();
-        beerRepository.count().subscribe(count -> {
-            System.out.println("Beer Count is: " + count);
-        });
+        beerRepository.count().subscribe(count ->
+                System.out.println("Beer Count is: " + count));
 
-        customerRepository.count().subscribe(count -> {
-            System.out.println("Customer Count is: " + count);
-        });
+        customerRepository.count().subscribe(count ->
+                System.out.println("Customer Count is: " + count));
     }
 
     private void loadCustomerData() {
